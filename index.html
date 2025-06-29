@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Google Login</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f4f4f4;
+    }
+    .login-box {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    button {
+      background: #4285F4;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background: #3367d6;
+    }
+    .user-info {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+    <h2>Sign in with Google</h2>
+    <button id="googleSignInBtn">Continue with Google</button>
+    <div class="user-info" id="userInfo"></div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAOCmP3zi_fCHZoyNUw5zaaeU7I3wTXHVU",
+      authDomain: "anykeywordplanner.firebaseapp.com",
+      projectId: "anykeywordplanner",
+      storageBucket: "anykeywordplanner.firebasestorage.app",
+      messagingSenderId: "302125183226",
+      appId: "1:302125183226:web:85fe999a21995adbea5943",
+      measurementId: "G-NMV75FYN4P"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    let signingIn = false;
+
+    document.getElementById("googleSignInBtn").addEventListener("click", async () => {
+      if (signingIn) return;
+      signingIn = true;
+
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
+
+        document.getElementById("userInfo").innerHTML = `
+          <p><strong>Welcome:</strong> ${user.displayName}</p>
+          <p><strong>Email:</strong> ${user.email}</p>
+          <img src="${user.photoURL}" width="100" style="border-radius: 50%;" />
+        `;
+      } catch (error) {
+        console.error("Google sign-in error:", error.message);
+        alert("Failed to sign in: " + error.message);
+      } finally {
+        signingIn = false;
+      }
+    });
+  </script>
+</body>
+</html>
